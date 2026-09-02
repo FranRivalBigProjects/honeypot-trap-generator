@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honeypot Trap Generator for Forms</title>
+<meta name="description" content="Generate a hidden honeypot field snippet to add to your forms and catch simple spam bots without a captcha.">
+<meta name="google-site-verification" content="REPLACE_WITH_YOUR_VERIFICATION_CODE">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0f12;color:#d7dbe0;font-family:'JetBrains Mono',monospace;line-height:1.6;padding:24px 16px 60px}
+.wrap{max-width:760px;margin:0 auto}
+h1{font-size:22px;color:#7ee787;margin-bottom:6px}
+.subtitle{color:#8b949e;font-size:14px;margin-bottom:24px}
+.panel{background:#14171a;border:1px solid #2a2f36;border-radius:6px;padding:18px;margin-bottom:20px}
+.panel h2{font-size:15px;color:#58a6ff;margin-bottom:12px}
+label{display:block;font-size:12px;color:#8b949e;margin:10px 0 4px}
+input[type=text]{width:100%;background:#0a0c0e;border:1px solid #2a2f36;border-radius:4px;color:#d7dbe0;font-family:'JetBrains Mono',monospace;font-size:13px;padding:10px}
+.btn{background:#238636;color:#fff;border:none;border-radius:4px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;cursor:pointer;margin-right:8px;margin-top:12px}
+.btn.secondary{background:#21262d;border:1px solid #2a2f36}
+.output{background:#0a0c0e;border:1px solid #2a2f36;border-radius:4px;padding:14px;font-size:12px;color:#d7dbe0;white-space:pre-wrap;word-break:break-word;margin-top:12px}
+article{font-size:13px;color:#a9b1bb;margin-top:26px}
+article h2{font-size:15px;color:#58a6ff;margin:16px 0 8px}
+article p{margin-bottom:8px}
+footer{text-align:center;font-size:11px;color:#4a5158;margin-top:34px}
+</style></head>
+<body><div class="wrap">
+<h1>Honeypot Trap Generator</h1>
+<p class="subtitle">Generate a hidden form field that real users never fill in but simple spam bots often do.</p>
+<div class="panel">
+<h2>Settings</h2>
+<label>Field name</label>
+<input type="text" id="fieldName" value="website">
+<button class="btn" id="generateBtn">Generate</button>
+<button class="btn secondary" id="copyBtn">Copy</button>
+<div class="output" id="output"></div>
+</div>
+<article><h2>How to Use It</h2><p>Add this field to your form, and on your server, reject any submission where this field is not empty. Real users never see or fill it because it is visually hidden, but basic bots that auto-fill every input on a page will populate it, giving you an easy way to silently discard their submission.</p><p>This catches unsophisticated bots only. Combine it with rate limiting or a captcha if you are getting targeted spam from more advanced scripts.</p></article>
+<footer>Client-side tool. Nothing you enter here is stored or sent anywhere.</footer>
+</div>
+<script>
+function generate(){
+  var name=document.getElementById('fieldName').value.trim()||'website';
+  var code='<!-- Honeypot field: hidden from real users, often filled by bots -->\n';
+  code+='<div style="position:absolute; left:-9999px; top:-9999px;" aria-hidden="true">\n';
+  code+='  <label for="'+name+'">Leave this field empty</label>\n';
+  code+='  <input type="text" id="'+name+'" name="'+name+'" tabindex="-1" autocomplete="off">\n';
+  code+='</div>\n\n';
+  code+='<!-- Server-side check (pseudocode):\n';
+  code+='if (form.'+name+' !== "") { reject submission as spam; }\n';
+  code+='-->';
+  document.getElementById('output').innerHTML=code;
+}
+function copyOutput(){
+  var text=document.getElementById('output').innerText||document.getElementById('output').textContent;
+  if(navigator.clipboard){ navigator.clipboard.writeText(text); }
+}
+document.getElementById('generateBtn').addEventListener('click',generate);
+document.getElementById('copyBtn').addEventListener('click',copyOutput);
+generate();
+</script>
+</body></html>
